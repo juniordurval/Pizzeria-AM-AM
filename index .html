@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+
+<!-- ============================================================= -->
+<!--  WhatsApp YA configurado: +591 69362762                       -->
+<!--  Si algún día cambia, editá la línea:                         -->
+<!--    const WHATSAPP_NUMERO = "59169362762";                     -->
+<!--  (más abajo, en el <script>). Sin "+", espacios ni guiones.   -->
+<!-- ============================================================= -->
+
+<title>Ñam Ñam Pizza · Menú y pedidos por WhatsApp</title>
+<meta name="description" content="Pizzas artesanales, Ñamburguer y lasaña en Ñam Ñam Pizza. Mirá el menú en 3D y hacé tu pedido por WhatsApp. Amor a primera rebanada." />
+<meta name="theme-color" content="#3a0808" />
+<meta property="og:type" content="restaurant" />
+<meta property="og:title" content="Ñam Ñam Pizza · Amor a primera rebanada" />
+<meta property="og:description" content="Pizzas artesanales, Ñamburguer y lasaña. Pedí por WhatsApp." />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Ccircle%20cx='16'%20cy='16'%20r='15'%20fill='%23ffffff'%20stroke='%23d81f26'%20stroke-width='2'/%3E%3Cpath%20d='M16%2025%20L8%2011%20A9%209%200%200%201%2024%2011%20Z'%20fill='%23e2231a'/%3E%3Ccircle%20cx='14'%20cy='15'%20r='1.4'%20fill='%23f5a623'/%3E%3Ccircle%20cx='18'%20cy='14'%20r='1.4'%20fill='%23f5a623'/%3E%3Ccircle%20cx='16'%20cy='18'%20r='1.4'%20fill='%23f5a623'/%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Dancing+Script:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<!-- Three.js (para la pizza 3D). Si no hay internet, se muestra el logo. -->
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+
+<style>
+  :root{
+    --maroon-1:#3a0808; --maroon-2:#5a0d0e; --maroon-3:#7d1416;
+    --panel:#4a0d0f; --panel-2:#5e1214;
+    --red:#e2231a; --red-2:#b81419;
+    --gold:#f7c233; --gold-2:#f6a31f;
+    --cream:#fff3e2; --cream-dim:rgba(255,243,226,.74);
+    --line:rgba(247,194,51,.28);
+    --wa:#25d366; --wa-dark:#159a4f; --basil:#69b13f;
+    --font-display:'Anton','Arial Narrow',sans-serif;
+    --font-brand:'Poppins',system-ui,sans-serif;
+    --font-script:'Dancing Script','Brush Script MT',cursive;
+    --font-body:'Poppins',system-ui,-apple-system,sans-serif;
+    --maxw:1140px; --r:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:var(--font-body);color:var(--cream);
+    background:radial-gradient(1100px 620px at 50% -8%,#84161a 0%,#5a0d0e 46%,#3a0808 100%) fixed,var(--maroon-1);
+    line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:10px}
+  .wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(16px,5vw,40px)}
+  .emblem{display:block}
+
+  /* ---------- header ---------- */
+  header.bar{position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);
+    background:linear-gradient(to bottom,rgba(45,7,7,.92),rgba(45,7,7,.74));border-bottom:1px solid rgba(247,194,51,.18)}
+  .bar-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-block:10px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand .emblem{width:40px;height:40px;flex:none}
+  .brand .wm{font-family:var(--font-brand);font-weight:800;font-size:1.18rem;color:var(--cream);line-height:1;white-space:nowrap}
+  .brand .wm small{display:block;font-weight:600;font-size:.6rem;letter-spacing:.34em;color:var(--gold);margin-top:2px}
+  nav.links{display:flex;gap:26px;margin-left:auto;margin-right:6px}
+  nav.links a{font-weight:600;font-size:.92rem;color:var(--cream-dim);position:relative;padding-block:4px}
+  nav.links a:hover{color:var(--gold)}
+  nav.links a::after{content:"";position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--gold);transition:width .25s ease}
+  nav.links a:hover::after{width:100%}
+
+  .wa-btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-brand);font-weight:700;font-size:.95rem;
+    color:#06351b;background:var(--wa);padding:11px 18px;border-radius:999px;border:0;cursor:pointer;
+    box-shadow:0 8px 22px -8px rgba(37,211,102,.7);transition:transform .15s ease,box-shadow .2s ease,background .2s ease;white-space:nowrap}
+  .wa-btn:hover{transform:translateY(-2px);background:#2ee06f;box-shadow:0 12px 26px -8px rgba(37,211,102,.85)}
+  .wa-btn:active{transform:translateY(0)}
+  .wa-btn .ic{width:19px;height:19px;flex:none}
+  .bar .wa-btn{padding:9px 15px;font-size:.86rem}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;z-index:1;text-align:center;padding:clamp(26px,5vw,52px) 0 clamp(30px,6vw,56px)}
+  .hero-3d{position:relative;width:min(520px,94%);height:clamp(260px,44vw,420px);margin:0 auto 4px}
+  .hero-3d::after{content:"";position:absolute;inset:6%;z-index:-1;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(247,194,51,.22),rgba(226,35,26,.08) 60%,transparent 72%);filter:blur(14px)}
+  #pizzaCanvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .8s ease;cursor:grab;touch-action:pan-y;display:block}
+  #pizzaCanvas:active{cursor:grabbing}
+  .hero-3d.ready #pizzaCanvas{opacity:1}
+  .fallback3d{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58%;height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+  .hero-3d.ready .fallback3d{display:none}
+  .spin-hint{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-dim);margin:0 0 14px;opacity:0;transition:opacity .6s}
+  .hero-3d.ready ~ .spin-hint{opacity:.8}
+
+  .eyebrow{font-family:var(--font-brand);font-weight:600;letter-spacing:.34em;text-transform:uppercase;font-size:.72rem;color:var(--gold);margin:0 0 6px}
+  .wordmark{font-family:var(--font-brand);font-weight:800;font-size:clamp(2.7rem,11vw,5.2rem);line-height:.92;letter-spacing:-.01em;margin:0;color:var(--gold);text-shadow:0 3px 0 var(--red-2),0 10px 24px rgba(0,0,0,.45)}
+  .wordmark span{color:var(--cream)}
+  .word-pizza{font-family:var(--font-brand);font-weight:700;letter-spacing:.5em;font-size:clamp(.95rem,3.4vw,1.4rem);color:var(--cream);margin:8px 0 0;padding-left:.5em}
+  .tagline{font-family:var(--font-script);font-weight:700;font-size:clamp(1.7rem,6vw,2.7rem);color:var(--gold-2);margin:10px 0 0;transform:rotate(-2deg)}
+  .lead{max-width:46ch;margin:18px auto 0;color:var(--cream-dim);font-size:1.02rem}
+  .hero-cta{margin-top:26px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .ghost{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-brand);font-weight:700;color:var(--gold);background:transparent;border:1.5px solid var(--line);padding:11px 18px;border-radius:999px;transition:.2s}
+  .ghost:hover{border-color:var(--gold);background:rgba(247,194,51,.08)}
+  .pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,243,226,.06);border:1px solid rgba(255,243,226,.12);padding:7px 14px;border-radius:999px;font-size:.82rem;font-weight:600;color:var(--cream-dim)}
+  .pill b{color:var(--gold);font-family:var(--font-display);font-weight:400;font-size:1rem;letter-spacing:.02em}
+
+  .dash{height:0;border:0;border-top:2px dashed var(--line);max-width:var(--maxw);margin:6px auto;width:calc(100% - clamp(32px,10vw,80px))}
+
+  /* ---------- sections ---------- */
+  section{position:relative;z-index:1;padding-block:clamp(40px,7vw,72px);scroll-margin-top:78px}
+  .sec-head{text-align:center;margin-bottom:clamp(26px,5vw,44px)}
+  .sec-head .kicker{font-family:var(--font-brand);font-weight:600;letter-spacing:.32em;text-transform:uppercase;font-size:.72rem;color:var(--gold);display:block;margin-bottom:6px}
+  .sec-head h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2.2rem,8vw,3.6rem);letter-spacing:.01em;margin:0;color:var(--cream);text-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .sec-head h2 em{font-style:normal;color:var(--gold)}
+  .sec-head p{color:var(--cream-dim);max-width:48ch;margin:10px auto 0;font-size:.98rem}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+  .card{position:relative;background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid rgba(247,194,51,.14);border-radius:var(--r);padding:20px 20px 18px;display:flex;flex-direction:column;
+    box-shadow:0 14px 30px -18px rgba(0,0,0,.7);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+    transform-style:preserve-3d;will-change:transform}
+  .card::before{content:"";position:absolute;inset:0;border-radius:var(--r);padding:1px;background:linear-gradient(140deg,rgba(247,194,51,.4),transparent 42%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .2s;pointer-events:none}
+  .card:hover{transform:translateY(-5px);border-color:rgba(247,194,51,.42);box-shadow:0 24px 44px -20px rgba(0,0,0,.85)}
+  .card:hover::before{opacity:1}
+  .card.tilting{transition:none}
+  .card.tilting::before{opacity:1}
+  .glare{position:absolute;inset:0;border-radius:var(--r);pointer-events:none;opacity:0;transition:opacity .25s;
+    background:radial-gradient(220px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.16),transparent 60%)}
+  .card.tilting .glare{opacity:1}
+
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .pizza-name{font-family:var(--font-display);font-weight:400;font-size:1.5rem;letter-spacing:.02em;line-height:1.05;color:var(--gold);margin:0}
+  .tag{font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--red);padding:4px 8px;border-radius:999px;white-space:nowrap;align-self:center}
+  .ingredients{color:var(--cream-dim);font-size:.92rem;margin:8px 0 0;min-height:2.8em}
+  .prices{display:flex;gap:14px;margin:16px 0 4px;flex-wrap:wrap}
+  .coin{width:86px;height:86px;border-radius:50%;flex:none;background:radial-gradient(circle at 36% 30%,#ef3d34,#bf161b 72%);
+    border:3px solid #fff;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    box-shadow:0 8px 16px -8px rgba(0,0,0,.6),inset 0 2px 6px rgba(255,255,255,.3),inset 0 -6px 10px rgba(0,0,0,.25)}
+  .coin .amt{font-family:var(--font-display);font-weight:400;font-size:1.5rem;line-height:1}
+  .coin .amt sup{font-size:.62rem;font-weight:700;font-family:var(--font-brand);vertical-align:super;margin-left:1px}
+  .coin .sz{font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-top:3px;opacity:.95}
+  .order-btn{margin-top:14px;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:var(--font-brand);font-weight:700;font-size:.95rem;
+    color:var(--cream);background:linear-gradient(180deg,#e2231a,#b3141a);border:1px solid rgba(255,255,255,.14);padding:12px 16px;border-radius:12px;cursor:pointer;
+    transition:transform .15s ease,filter .2s ease,box-shadow .2s ease;box-shadow:0 10px 22px -12px rgba(226,35,26,.8)}
+  .order-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 14px 26px -12px rgba(226,35,26,.9)}
+  .order-btn:active{transform:translateY(0)}
+  .order-btn .ic{width:18px;height:18px;flex:none}
+  .order-btn.alt{background:linear-gradient(180deg,#2bbf63,#159a4f);color:#fff;box-shadow:0 10px 22px -12px rgba(37,211,102,.8)}
+  .card.special .pizza-name{color:var(--cream)}
+  .card.special{border-color:rgba(247,194,51,.2)}
+
+  /* ---------- footer ---------- */
+  footer{position:relative;z-index:1;border-top:1px solid rgba(247,194,51,.18);margin-top:14px;padding-block:clamp(40px,7vw,64px);text-align:center}
+  footer .emblem{width:84px;height:auto;margin:0 auto 14px;filter:drop-shadow(0 10px 20px rgba(0,0,0,.4))}
+  footer h3{font-family:var(--font-display);font-weight:400;font-size:clamp(1.8rem,6vw,2.6rem);margin:0;color:var(--gold)}
+  footer .ftag{font-family:var(--font-script);font-weight:700;font-size:1.5rem;color:var(--cream);margin:4px 0 18px;transform:rotate(-2deg)}
+  .foot-meta{color:var(--cream-dim);font-size:.9rem;margin-top:20px;line-height:1.9}
+  .foot-meta strong{color:var(--cream)}
+  .foot-meta a{color:var(--gold);font-weight:600}
+  .credit{color:rgba(255,243,226,.42);font-size:.78rem;margin-top:18px}
+
+  /* ---------- floating WA ---------- */
+  .float-wa{position:fixed;right:18px;bottom:18px;z-index:40;width:60px;height:60px;border-radius:50%;background:var(--wa);display:grid;place-items:center;
+    box-shadow:0 12px 30px -8px rgba(37,211,102,.75);transform:translateY(110px);opacity:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s,background .2s}
+  .float-wa.show{transform:translateY(0);opacity:1}
+  .float-wa:hover{background:#2ee06f}
+  .float-wa .ic{width:30px;height:30px}
+  .float-wa::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--wa);animation:ping 2.4s ease-out infinite}
+  @keyframes ping{0%{transform:scale(1);opacity:.6}70%{transform:scale(1.7);opacity:0}100%{opacity:0}}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  .hero .reveal{transition-delay:var(--d,0s)}
+
+  @media (max-width:640px){
+    nav.links{display:none}
+    .ghost{display:none}
+    .coin{width:78px;height:78px}
+    .ingredients{min-height:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{animation:none !important;transition:none !important}
+    .reveal{opacity:1;transform:none}
+    .float-wa{transform:translateY(0);opacity:1}
+    .float-wa::after{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- reusable emblem + whatsapp glyph -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="emblem" viewBox="0 0 240 240">
+    <circle cx="120" cy="120" r="115" fill="#fff" stroke="#d81f26" stroke-width="8"/>
+    <circle cx="120" cy="120" r="101" fill="none" stroke="#d81f26" stroke-width="3"/>
+    <path d="M120 160 L62 80 A90 90 0 0 1 178 80 Z" fill="#e2231a"/>
+    <g stroke="#fff" stroke-width="5" stroke-linecap="round">
+      <line x1="120" y1="160" x2="95" y2="78"/><line x1="120" y1="160" x2="145" y2="78"/>
+    </g>
+    <g fill="#f5a623">
+      <circle cx="112" cy="108" r="5"/><circle cx="128" cy="100" r="5"/><circle cx="120" cy="124" r="5"/>
+      <circle cx="134" cy="118" r="5"/><circle cx="108" cy="128" r="4.5"/><circle cx="124" cy="142" r="4.5"/>
+    </g>
+    <g transform="rotate(-20 88 120)" fill="#fff">
+      <rect x="83" y="96" width="6" height="58" rx="3"/><rect x="76" y="84" width="3.4" height="20" rx="1.7"/>
+      <rect x="82.5" y="84" width="3.4" height="20" rx="1.7"/><rect x="89" y="84" width="3.4" height="20" rx="1.7"/>
+      <rect x="76" y="100" width="16.4" height="6" rx="3"/>
+    </g>
+    <g transform="rotate(20 152 120)" fill="#fff">
+      <rect x="149" y="116" width="6" height="40" rx="3"/><path d="M152 84 q9 6 9 18 q0 10 -9 12 Z"/>
+    </g>
+  </symbol>
+  <symbol id="wa" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.11.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/>
+  </symbol>
+</svg>
+
+<header class="bar">
+  <div class="wrap bar-inner">
+    <a class="brand" href="#top" aria-label="Ñam Ñam Pizza, inicio">
+      <svg class="emblem" viewBox="0 0 240 240" aria-hidden="true"><use href="#emblem"/></svg>
+      <span class="wm">Ñam Ñam<small>PIZZA</small></span>
+    </a>
+    <nav class="links" aria-label="Secciones">
+      <a href="#pizzas">Pizzas</a><a href="#especialidades">Especialidades</a>
+    </nav>
+    <a class="wa-btn" data-wa="general" target="_blank" rel="noopener">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#wa"/></svg>Pedir
+    </a>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero wrap">
+  <div class="hero-3d reveal" id="hero3d" style="--d:0s">
+    <canvas id="pizzaCanvas"></canvas>
+    <svg class="emblem fallback3d" viewBox="0 0 240 240" role="img" aria-label="Logo Ñam Ñam Pizza"><use href="#emblem"/></svg>
+  </div>
+  <p class="spin-hint">↺ Girá la pizza con el dedo</p>
+  <p class="eyebrow reveal" style="--d:.05s">Pizzería artesanal</p>
+  <h1 class="wordmark reveal" style="--d:.1s">Ñam <span>Ñam</span></h1>
+  <p class="word-pizza reveal" style="--d:.15s">PIZZA</p>
+  <p class="tagline reveal" style="--d:.2s">Amor a primera rebanada</p>
+  <p class="lead reveal" style="--d:.28s">Pizzas recién horneadas, Ñamburguer y lasaña, hechas con harto amor. Elegí tu favorita y hacé tu pedido por WhatsApp.</p>
+  <div class="hero-cta reveal" style="--d:.36s">
+    <a class="wa-btn" data-wa="general" target="_blank" rel="noopener">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#wa"/></svg>Pedir por WhatsApp
+    </a>
+    <a class="ghost" href="#pizzas">Ver el menú ↓</a>
+  </div>
+  <div class="pills reveal" style="--d:.44s">
+    <span class="pill"><b>9</b> pizzas</span>
+    <span class="pill">Desde <b>25 Bs</b></span>
+    <span class="pill">Tamaño <b>Personal</b> y <b>Mediana</b></span>
+  </div>
+</div>
+
+<hr class="dash" />
+
+<section id="pizzas">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Nuestro menú</span>
+      <h2><em>Pizzas</em></h2>
+      <p>Todas con salsa pomodoro y queso mozzarella. Disponibles en tamaño Mediana y Personal.</p>
+    </div>
+    <div class="grid" id="pizza-grid"></div>
+  </div>
+</section>
+
+<hr class="dash" />
+
+<section id="especialidades">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="kicker">Para acompañar</span>
+      <h2>Especialidades <em>&amp; más</em></h2>
+      <p>Hamburguesa de la casa, lasaña al horno y bebidas naturales del día.</p>
+    </div>
+    <div class="grid" id="special-grid"></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <svg class="emblem" viewBox="0 0 240 240" aria-hidden="true"><use href="#emblem"/></svg>
+    <h3>Ñam Ñam Pizza</h3>
+    <p class="ftag">Amor a primera rebanada</p>
+    <a class="wa-btn" data-wa="general" target="_blank" rel="noopener" style="margin-inline:auto">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#wa"/></svg>Hacé tu pedido
+    </a>
+    <p class="foot-meta">
+      <strong>Pedidos y consultas por WhatsApp</strong><br />
+      <a href="https://wa.me/59169362762" target="_blank" rel="noopener">+591 69362762</a>
+      <!-- Opcional: descomentá y editá con tus datos -->
+      <!-- <br />Horario: Mar a Dom · 18:00 – 23:00 -->
+      <!-- <br />Zona: tu dirección o zona de reparto -->
+    </p>
+    <p class="credit">© <span id="year"></span> Ñam Ñam Pizza · Hecho con 🍕 y mozzarella</p>
+  </div>
+</footer>
+
+<a class="float-wa" id="floatWa" data-wa="general" target="_blank" rel="noopener" aria-label="Pedir por WhatsApp">
+  <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#wa"/></svg>
+</a>
+
+<noscript>
+  <p style="text-align:center;padding:20px;color:#fff3e2">Activá JavaScript para ver el menú completo. O escribinos directo por
+  <a href="https://wa.me/59169362762" style="color:#f7c233">WhatsApp</a>.</p>
+</noscript>
+
+<!-- ====================== Pizza 3D (Three.js) ====================== -->
+<script type="module">
+(async () => {
+  const host = document.getElementById('hero3d');
+  const canvas = document.getElementById('pizzaCanvas');
+  if (!host || !canvas) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let THREE;
+  try { THREE = await import('three'); }
+  catch (e) { return; } // sin internet: queda el logo SVG
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(0, 3.4, 6.2);
+  camera.lookAt(0, 0.15, 0);
+
+  scene.add(new THREE.AmbientLight(0xfff3e0, 0.7));
+  const key = new THREE.DirectionalLight(0xfff0d2, 1.5); key.position.set(5, 9, 6); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xff8a4c, 0.5); rim.position.set(-6, 4, -4); scene.add(rim);
+
+  const pizza = new THREE.Group();
+  const M = (c, o = {}) => new THREE.MeshStandardMaterial({ color:c, roughness:0.8, ...o });
+
+  pizza.add(new THREE.Mesh(new THREE.CylinderGeometry(2.55, 2.5, 0.34, 64), M(0xe0a456,{roughness:0.95})));
+  const crust = new THREE.Mesh(new THREE.TorusGeometry(2.5, 0.3, 18, 80), M(0xc67a32,{roughness:0.9}));
+  crust.rotation.x = Math.PI/2; crust.position.y = 0.05; pizza.add(crust);
+  const sauce = new THREE.Mesh(new THREE.CylinderGeometry(2.3, 2.3, 0.05, 64), M(0xb02318,{roughness:0.7}));
+  sauce.position.y = 0.19; pizza.add(sauce);
+  const cheese = new THREE.Mesh(new THREE.CylinderGeometry(2.22, 2.24, 0.09, 64), M(0xf0bf4d,{roughness:0.5,metalness:0.04}));
+  cheese.position.y = 0.23; pizza.add(cheese);
+
+  const rnd = (r) => { const a = Math.random()*Math.PI*2, rr = Math.sqrt(Math.random())*r; return [Math.cos(a)*rr, Math.sin(a)*rr]; };
+
+  const pepGeo = new THREE.CylinderGeometry(0.23, 0.23, 0.06, 22), pepMat = M(0xbe2f24,{roughness:0.55});
+  for (let i=0;i<13;i++){ const m=new THREE.Mesh(pepGeo,pepMat); const [x,z]=rnd(1.95); m.position.set(x,0.3,z); pizza.add(m); }
+
+  const basMat = M(0x3f8f2e,{roughness:0.7}), basGeo = new THREE.SphereGeometry(0.13,14,10);
+  for (let i=0;i<11;i++){ const m=new THREE.Mesh(basGeo,basMat); m.scale.set(1.7,0.32,1.1); const [x,z]=rnd(1.95); m.position.set(x,0.31,z); m.rotation.y=Math.random()*Math.PI; pizza.add(m); }
+
+  const bubMat = M(0xf6cf6a,{roughness:0.45});
+  for (let i=0;i<16;i++){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),bubMat); const [x,z]=rnd(2.05); m.position.set(x,0.27,z); m.scale.y=0.6; pizza.add(m); }
+
+  pizza.rotation.x = -0.45; pizza.rotation.y = -0.4;
+  scene.add(pizza);
+
+  function resize(){
+    const w = host.clientWidth, h = host.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+  let dragging=false, lastX=0, lastY=0, vel=0;
+  const down = (e)=>{ dragging=true; const t=e.touches&&e.touches[0]; lastX=t?t.clientX:e.clientX; lastY=t?t.clientY:e.clientY; };
+  const move = (e)=>{ if(!dragging) return; const isT=!!e.touches; const t=isT?e.touches[0]:e;
+    const dx=t.clientX-lastX, dy=t.clientY-lastY; pizza.rotation.y += dx*0.01;
+    if(!isT) pizza.rotation.x = clamp(pizza.rotation.x + dy*0.005, -1.1, -0.05);
+    vel = dx*0.01; lastX=t.clientX; lastY=t.clientY; };
+  const up = ()=>{ dragging=false; };
+  canvas.addEventListener('mousedown', down); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
+  canvas.addEventListener('touchstart', down, {passive:true}); canvas.addEventListener('touchmove', move, {passive:true}); canvas.addEventListener('touchend', up);
+
+  let visible=true;
+  new IntersectionObserver(([en])=>{ visible = en.isIntersecting; }, {threshold:0.01}).observe(host);
+
+  host.classList.add('ready');
+  const clock = new THREE.Clock();
+  (function loop(){
+    requestAnimationFrame(loop);
+    if (document.hidden || !visible) return;
+    const t = clock.getElapsedTime();
+    if (!reduce){
+      if (!dragging){ pizza.rotation.y += 0.0045 + vel; vel *= 0.92; }
+      pizza.position.y = Math.sin(t*1.4)*0.07;
+    }
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+
+<!-- ====================== Menú + WhatsApp + tilt 3D ====================== -->
+<script>
+/* ============================================================= */
+/*  NÚMERO DE WHATSAPP (código país + número, sin + ni espacios) */
+const WHATSAPP_NUMERO = "59169362762";   /* +591 69362762 */
+/* ============================================================= */
+
+const PIZZAS = [
+  { n:"Calabresa",  d:"Pomodoro, chorizo calabresa, queso mozzarella.",        med:45, per:25 },
+  { n:"Hawaiana",   d:"Pomodoro, jamón, piña, queso mozzarella.",              med:45, per:25 },
+  { n:"Diavola",    d:"Pomodoro, salsa picante, chorizo picante, mozzarella.", med:45, per:25, tag:"Picante 🌶" },
+  { n:"Bolognesa",  d:"Pomodoro, carne a la bolognesa, queso mozzarella.",     med:50, per:30 },
+  { n:"Rústica",    d:"Pomodoro, jamón, salami, queso mozzarella.",            med:45, per:25 },
+  { n:"Caprichosa", d:"Pomodoro, jamón, choclo, champiñón, pimentón, tomate fresco, mozzarella.", med:50, per:30 },
+  { n:"Margherita", d:"Pomodoro, jamón, queso mozzarella.",                    med:45, per:25 },
+  { n:"Primavera",  d:"Pomodoro, jamón, choclo, queso mozzarella.",            med:45, per:25 },
+  { n:"Campestre",  d:"Pomodoro, jamón, champiñones, queso mozzarella.",       med:45, per:25 },
+];
+const SPECIALS = [
+  { n:"Ñamburguer", d:"Carne, queso, tomate fresco, salsa de la casa y pan.", price:15, label:"Personal" },
+  { n:"Lasaña",     d:"Lasaña al horno con salsa boloñesa, bien gratinada.",  price:25, label:"Personal" },
+  { n:"Bebidas & refrescos naturales", d:"Preguntá por nuestras opciones y refrescos naturales del día.", ask:true },
+];
+
+const waLink = (msg) => `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`;
+const esc = (s) => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const MSG = {
+  general: "¡Hola Ñam Ñam! 🍕 Quiero hacer un pedido. ¿Me pueden ayudar?",
+  pizza: (p) => `¡Hola Ñam Ñam! 🍕 Quiero hacer un pedido:\n\n• Pizza *${p.n}* — Mediana ${p.med} Bs / Personal ${p.per} Bs\n\nMe interesa el tamaño ______ . ¿Me confirman? ¡Gracias!`,
+  special: (s) => `¡Hola Ñam Ñam! 🍕 Quiero pedir:\n\n• *${s.n}* — ${s.price} Bs (${s.label})\n\n¿Me confirman disponibilidad? ¡Gracias!`,
+  ask: (s) => `¡Hola Ñam Ñam! 🍕 ¿Qué *${s.n.toLowerCase()}* tienen hoy y a qué precio? ¡Gracias!`,
+};
+const waIcon = `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#wa"/></svg>`;
+
+document.getElementById("pizza-grid").innerHTML = PIZZAS.map(p => `
+  <article class="card reveal">
+    <div class="card-top">
+      <h3 class="pizza-name">${esc(p.n)}</h3>
+      ${p.tag ? `<span class="tag">${esc(p.tag)}</span>` : ``}
+    </div>
+    <p class="ingredients">${esc(p.d)}</p>
+    <div class="prices">
+      <div class="coin"><span class="amt">${p.med}<sup>Bs</sup></span><span class="sz">Mediana</span></div>
+      <div class="coin"><span class="amt">${p.per}<sup>Bs</sup></span><span class="sz">Personal</span></div>
+    </div>
+    <a class="order-btn" href="${waLink(MSG.pizza(p))}" target="_blank" rel="noopener">${waIcon} Pedir por WhatsApp</a>
+  </article>`).join("");
+
+document.getElementById("special-grid").innerHTML = SPECIALS.map(s => {
+  if (s.ask) return `
+    <article class="card special reveal">
+      <div class="card-top"><h3 class="pizza-name">${esc(s.n)}</h3></div>
+      <p class="ingredients">${esc(s.d)}</p>
+      <div style="flex:1"></div>
+      <a class="order-btn alt" href="${waLink(MSG.ask(s))}" target="_blank" rel="noopener">${waIcon} Consultar opciones</a>
+    </article>`;
+  return `
+    <article class="card special reveal">
+      <div class="card-top"><h3 class="pizza-name">${esc(s.n)}</h3></div>
+      <p class="ingredients">${esc(s.d)}</p>
+      <div class="prices">
+        <div class="coin"><span class="amt">${s.price}<sup>Bs</sup></span><span class="sz">${esc(s.label)}</span></div>
+      </div>
+      <a class="order-btn" href="${waLink(MSG.special(s))}" target="_blank" rel="noopener">${waIcon} Pedir por WhatsApp</a>
+    </article>`;
+}).join("");
+
+document.querySelectorAll('[data-wa="general"]').forEach(a => a.href = waLink(MSG.general));
+document.getElementById("year").textContent = new Date().getFullYear();
+
+const floatWa = document.getElementById("floatWa");
+const onScroll = () => floatWa.classList.toggle("show", window.scrollY > 320);
+window.addEventListener("scroll", onScroll, { passive:true });
+onScroll();
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* scroll reveal */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+}, { threshold:0.12 });
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+/* tilt 3D en las tarjetas (solo mouse fino) */
+const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+if (fine && !reduceMotion){
+  document.querySelectorAll('.card').forEach(card => {
+    const glare = document.createElement('div'); glare.className = 'glare'; card.prepend(glare);
+    card.addEventListener('pointerenter', () => card.classList.add('tilting'));
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left)/r.width, py = (e.clientY - r.top)/r.height;
+      const rx = (0.5 - py)*9, ry = (px - 0.5)*11;
+      card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
+      glare.style.setProperty('--gx', (px*100)+'%');
+      glare.style.setProperty('--gy', (py*100)+'%');
+    });
+    card.addEventListener('pointerleave', () => { card.classList.remove('tilting'); card.style.transform = ''; });
+  });
+}
+</script>
+</body>
+</html>
