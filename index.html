@@ -231,52 +231,80 @@
     50%      { opacity:.2;  transform: translateX(-50%) scaleX(.8); }
   }
 
-  /* contenedor: ocupa todo el hero-3d */
-  .css-pizza {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* ---- Pizza fija en pantalla (wall pizza) ---- */
+  #wall-pizza {
+    position: fixed;
+    /* centrada verticalmente, pegada a la derecha */
+    right: -80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(180px, 22vw, 280px);
+    aspect-ratio: 1;
+    z-index: 20;
     cursor: grab;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;   /* bloquea scroll/zoom del navegador sobre la pizza */
+    touch-action: none;
     -webkit-tap-highlight-color: transparent;
+    /* fade in suave al cargar */
+    opacity: 0;
+    animation: wpz-fadein .8s .4s ease forwards;
   }
-  .css-pizza:active { cursor: grabbing; }
+  #wall-pizza:active { cursor: grabbing; }
+  @keyframes wpz-fadein { to { opacity: 1; } }
+
+  /* en móvil: más pequeña y menos salida del borde */
+  @media (max-width: 600px) {
+    #wall-pizza {
+      right: -60px;
+      width: clamp(130px, 38vw, 180px);
+    }
+  }
+
+  /* hint de giro */
+  .cpz-hint {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .65rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(255,243,226,.5);
+    white-space: nowrap;
+    pointer-events: none;
+  }
 
   /* wrapper flotante */
   .cpz-wrap {
     position: relative;
-    width: min(300px, 70vw, 70%);
+    width: 100%;
     aspect-ratio: 1;
     animation: cpz-float 3s ease-in-out infinite;
-    flex-shrink: 0;
   }
 
-  /* sombra debajo */
+  /* sombra */
   .cpz-shadow {
     position: absolute;
-    bottom: -12%;
+    bottom: -10%;
     left: 50%;
     transform: translateX(-50%);
-    width: 80%; height: 12px;
+    width: 80%; height: 10px;
     background: radial-gradient(ellipse, rgba(0,0,0,.55) 0%, transparent 70%);
     border-radius: 50%;
     animation: cpz-shadow-pulse 3s ease-in-out infinite;
   }
 
-  /* disco que gira — JS controla transform rotate() */
+  /* disco girador — JS maneja transform */
   .cpz-base {
     width: 100%; height: 100%;
     border-radius: 50%;
     position: relative;
     will-change: transform;
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,.5));
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,.55));
   }
 
-  /* capas de la pizza */
+  /* capas */
   .cpz-crust {
     position: absolute; inset: 0;
     border-radius: 50%;
@@ -317,7 +345,6 @@
     border-radius: 50%;
     background: radial-gradient(circle at 32% 28%, #fffcd0, #f2c840 65%);
     opacity: .8;
-    box-shadow: 0 1px 3px rgba(0,0,0,.2);
   }
   .cpz-slice {
     position: absolute;
@@ -327,17 +354,6 @@
     transform-origin: left center;
     transform: translateY(-50%) rotate(var(--ang));
   }
-  .cpz-slice-r {
-    position: absolute;
-    top: 50%; right: 50%;
-    width: 50%; height: 1.5px;
-    background: rgba(140,60,8,.4);
-    transform-origin: right center;
-    transform: translateY(-50%) rotate(calc(var(--ang) + 180deg));
-  }
-
-  /* cuando Three.js carga, esconde la pizza CSS */
-  .hero-3d.ready .css-pizza { display: none; }
 
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
@@ -394,11 +410,7 @@
 
 <main id="top">
 <div class="hero wrap">
-  <div class="hero-3d reveal" id="hero3d" style="--d:0s">
-    <canvas id="pizzaCanvas"></canvas>
-    <div class="css-pizza fallback3d" aria-label="Pizza giratoria" role="img"><div class="cpz-wrap"><div class="cpz-shadow"></div><div class="cpz-base"><div class="cpz-crust"></div><div class="cpz-sauce"></div><div class="cpz-cheese"></div><div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div><div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div><div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div><div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div><div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div><div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div><div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div><div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div><div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div><div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div><div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div><div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div><div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div><div class="cpz-slice" style="--ang:0deg"></div><div class="cpz-slice" style="--ang:45deg"></div><div class="cpz-slice" style="--ang:90deg"></div><div class="cpz-slice" style="--ang:135deg"></div></div></div></div>
-  </div>
-  <p class="spin-hint">↺ Girá la pizza con el dedo</p>
+
   <p class="eyebrow reveal" style="--d:.05s">Pizzería artesanal</p>
   <h1 class="wordmark reveal" style="--d:.1s">Ñam <span>Ñam</span></h1>
   <p class="word-pizza reveal" style="--d:.15s">PIZZA</p>
@@ -663,94 +675,97 @@ if (fine && !reduceMotion){
 }
 </script>
 
-<!-- ====================== Pizza CSS interactiva ====================== -->
+<!-- ====================== Pizza de pared interactiva ====================== -->
 <script>
 (function(){
-  const pizza = document.querySelector('.css-pizza');
-  const wrap  = pizza && pizza.querySelector('.cpz-wrap');
+  const pizza = document.getElementById('wall-pizza');
   const base  = pizza && pizza.querySelector('.cpz-base');
-  if (!pizza || !base || !wrap) return;
+  if (!pizza || !base) return;
 
   base.style.animation = 'none';
 
-  let angle    = 0;
-  let velX     = 0;   // inercia horizontal → giro Z
-  let velY     = 0;   // inercia vertical   → escala (efecto profundidad)
-  const AUTO   = 0.4;
+  let angle = 0;
+  let vel   = 0;
+  const AUTO = 0.5;
   let dragging = false;
-  let lastX = 0, lastY = 0;
-  let scale = 1;
+  let lastX = 0;
 
   function tick(){
     if (!dragging){
-      velX  *= 0.92;
-      velY  *= 0.92;
-      angle += velX + AUTO;
-      // movimiento vertical cambia escala suavemente (simula 360 vertical)
-      scale += velY * 0.003;
-      scale  = Math.max(0.72, Math.min(1.28, scale));
-      // vuelve al centro solo
-      scale += (1 - scale) * 0.04;
+      vel   *= 0.93;
+      angle += vel + AUTO;
     }
-    base.style.transform = 'rotate(' + angle + 'deg) scale(' + scale + ')';
+    base.style.transform = 'rotate(' + angle + 'deg)';
     requestAnimationFrame(tick);
   }
   tick();
 
-  function getPos(e){
-    const t = e.touches ? e.touches[0] : e;
-    return { x: t.clientX, y: t.clientY };
-  }
+  function getX(e){ return (e.touches ? e.touches[0] : e).clientX; }
 
   function onDown(e){
     dragging = true;
-    const p = getPos(e);
-    lastX = p.x; lastY = p.y;
+    lastX = getX(e);
     pizza.style.cursor = 'grabbing';
-    // bloquear scroll de página solo cuando toca la pizza
-    e.preventDefault();
+    e.stopPropagation();   // no burbujear al window
+    e.preventDefault();    // bloquear scroll solo aquí
   }
-
   function onMove(e){
     if (!dragging) return;
-    // en touch, preventDefault aquí bloquea el scroll de la página
+    e.stopPropagation();
     if (e.cancelable) e.preventDefault();
-    const p  = getPos(e);
-    const dx = p.x - lastX;
-    const dy = p.y - lastY;
-    velX   = dx * 1.2;
-    velY   = dy * 1.2;
-    angle += velX;
-    scale += velY * 0.003;
-    scale  = Math.max(0.72, Math.min(1.28, scale));
-    lastX  = p.x;
-    lastY  = p.y;
+    const x = getX(e);
+    vel   = (x - lastX) * 1.3;
+    angle += vel;
+    lastX  = x;
   }
-
   function onUp(){ dragging = false; pizza.style.cursor = 'grab'; }
 
-  // Click = impulso rápido
-  pizza.addEventListener('click', () => { if (Math.abs(velX) < 2) velX += 12; });
+  // Click = impulso
+  pizza.addEventListener('click', () => { if (Math.abs(vel) < 2) vel += 14; });
 
-  // Mouse
-  pizza.addEventListener('mousedown',  onDown, { passive: false });
-  window.addEventListener('mousemove', onMove, { passive: false });
-  window.addEventListener('mouseup',   onUp);
+  // Mouse — listeners en la pizza, no en window, para no bloquear scroll de página
+  pizza.addEventListener('mousedown', onDown, { passive: false });
+  pizza.addEventListener('mousemove', onMove, { passive: false });
+  pizza.addEventListener('mouseup',   onUp);
+  pizza.addEventListener('mouseleave', onUp);
 
-  // Touch — passive:false es CLAVE para poder llamar preventDefault y bloquear scroll
-  pizza.addEventListener('touchstart', onDown, { passive: false });
-  pizza.addEventListener('touchmove',  onMove, { passive: false });
-  pizza.addEventListener('touchend',   onUp,   { passive: true });
-
-  // Apagar cuando Three.js carga
-  const host = document.getElementById('hero3d');
-  if (host){
-    new MutationObserver(() => {
-      if (host.classList.contains('ready')) base.style.animation = '';
-    }).observe(host, { attributes: true, attributeFilter: ['class'] });
-  }
+  // Touch — igual, solo en el elemento
+  pizza.addEventListener('touchstart', onDown,  { passive: false });
+  pizza.addEventListener('touchmove',  onMove,  { passive: false });
+  pizza.addEventListener('touchend',   onUp,    { passive: true });
+  pizza.addEventListener('touchcancel',onUp,    { passive: true });
 })();
 </script>
 
+
+<!-- Pizza fija en pantalla — giratoria interactiva -->
+<div id="wall-pizza" aria-label="Pizza decorativa giratoria" role="img">
+  <div class="cpz-wrap">
+    <div class="cpz-shadow"></div>
+    <div class="cpz-base">
+      <div class="cpz-crust"></div>
+      <div class="cpz-sauce"></div>
+      <div class="cpz-cheese"></div>
+      <div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div>
+      <div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div>
+      <div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div>
+      <div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div>
+      <div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div>
+      <div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div>
+      <div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div>
+      <div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div>
+      <div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div>
+      <div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div>
+      <div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div>
+      <div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div>
+      <div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div>
+      <div class="cpz-slice" style="--ang:0deg"></div>
+      <div class="cpz-slice" style="--ang:45deg"></div>
+      <div class="cpz-slice" style="--ang:90deg"></div>
+      <div class="cpz-slice" style="--ang:135deg"></div>
+    </div>
+    <div class="cpz-hint">↺ girá</div>
+  </div>
+</div>
 </body>
 </html>
