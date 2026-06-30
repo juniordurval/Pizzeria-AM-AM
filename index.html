@@ -90,10 +90,12 @@
   /* pizza 3D: aspect-ratio keeps it square-ish on all screens */
   .hero-3d{
     position:relative;
-    width:min(480px,88vw);
-    aspect-ratio:1/0.82;
+    width:min(420px,80vw);
+    aspect-ratio:1/0.85;
     margin:0 auto 4px;
     flex-shrink:0;
+    display:block;
+    left:0; right:0;
   }
   .hero-3d::after{content:"";position:absolute;inset:6%;z-index:-1;border-radius:50%;
     background:radial-gradient(closest-side,rgba(247,194,51,.22),rgba(226,35,26,.08) 60%,transparent 72%);filter:blur(14px)}
@@ -134,9 +136,15 @@
   .sec-head p{color:var(--cream-dim);max-width:48ch;margin:10px auto 0;font-size:.98rem}
 
   /* ---------- cards ---------- */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    justify-items:center;
+  }
   .card{position:relative;background:linear-gradient(180deg,var(--panel-2),var(--panel));
-    border:1px solid rgba(247,194,51,.14);border-radius:var(--r);padding:20px 20px 18px;display:flex;flex-direction:column;
+    border:1px solid rgba(247,194,51,.14);border-radius:var(--r);padding:24px 22px 20px;display:flex;flex-direction:column;
+    align-items:center;text-align:center;width:100%;
     box-shadow:0 14px 30px -18px rgba(0,0,0,.7);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
     transform-style:preserve-3d;will-change:transform}
   .card::before{content:"";position:absolute;inset:0;border-radius:var(--r);padding:1px;background:linear-gradient(140deg,rgba(247,194,51,.4),transparent 42%);
@@ -149,11 +157,11 @@
     background:radial-gradient(220px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.16),transparent 60%)}
   .card.tilting .glare{opacity:1}
 
-  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-  .pizza-name{font-family:var(--font-display);font-weight:400;font-size:1.5rem;letter-spacing:.02em;line-height:1.05;color:var(--gold);margin:0}
+  .card-top{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;text-align:center}
+  .pizza-name{font-family:var(--font-display);font-weight:400;font-size:1.5rem;letter-spacing:.02em;line-height:1.05;color:var(--gold);margin:0;text-align:center;width:100%}
   .tag{font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--red);padding:4px 8px;border-radius:999px;white-space:nowrap;align-self:center}
-  .ingredients{color:var(--cream-dim);font-size:.92rem;margin:8px 0 0;min-height:2.8em}
-  .prices{display:flex;gap:14px;margin:16px 0 4px;flex-wrap:wrap}
+  .ingredients{color:var(--cream-dim);font-size:.92rem;margin:8px 0 0;min-height:2.8em;text-align:center}
+  .prices{display:flex;gap:14px;margin:16px 0 4px;flex-wrap:wrap;justify-content:center}
   .coin{width:86px;height:86px;border-radius:50%;flex:none;background:radial-gradient(circle at 36% 30%,#ef3d34,#bf161b 72%);
     border:3px solid #fff;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
     box-shadow:0 8px 16px -8px rgba(0,0,0,.6),inset 0 2px 6px rgba(255,255,255,.3),inset 0 -6px 10px rgba(0,0,0,.25)}
@@ -194,119 +202,141 @@
   .hero .reveal{transition-delay:var(--d,0s)}
 
   /* ---------- responsive ---------- */
-  @media (max-width:760px){
-    .grid{grid-template-columns:1fr}
+  @media (max-width:960px){
+    .grid{grid-template-columns:repeat(2,1fr)}
   }
-  @media (max-width:640px){
+  @media (max-width:600px){
+    .grid{grid-template-columns:1fr}
     nav.links{display:none}
     .ghost{display:none}
     .coin{width:74px;height:74px}
     .coin .amt{font-size:1.3rem}
     .ingredients{min-height:0}
-    .hero-3d{width:min(340px,88vw)}
+    .hero-3d{width:min(320px,84vw)}
     .pills{gap:7px}
     .pill{font-size:.77rem;padding:6px 11px}
   }
   @media (max-width:400px){
-    .hero-3d{width:90vw}
-    .wordmark{font-size:clamp(2.2rem,15vw,3rem)}
+    .hero-3d{width:88vw}
+    .wordmark{font-size:clamp(2.2rem,14vw,3rem)}
   }
 
   /* ---------- CSS Pizza giratoria (fallback) ---------- */
-  @keyframes cpz-spin { to { transform: rotate(360deg); } }
   @keyframes cpz-float {
-    0%,100% { transform: translateY(0) scale(1); }
-    50%      { transform: translateY(-6%) scale(1.015); }
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
   }
-  @keyframes cpz-shadow {
-    0%,100% { transform: translate(-50%,-50%) scale(1); opacity:.45; }
-    50%      { transform: translate(-50%,-50%) scale(.82); opacity:.22; }
+  @keyframes cpz-shadow-pulse {
+    0%,100% { opacity:.45; transform: translateX(-50%) scaleX(1); }
+    50%      { opacity:.2;  transform: translateX(-50%) scaleX(.8); }
   }
 
+  /* contenedor: ocupa todo el hero-3d */
   .css-pizza {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 62%; aspect-ratio: 1;
-    animation: cpz-float 3.2s ease-in-out infinite;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
   }
+  .css-pizza:active { cursor: grabbing; }
+
+  /* wrapper flotante */
+  .cpz-wrap {
+    position: relative;
+    width: min(300px, 70vw, 70%);
+    aspect-ratio: 1;
+    animation: cpz-float 3s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  /* sombra debajo */
   .cpz-shadow {
     position: absolute;
-    bottom: -14%; left: 50%; 
-    width: 80%; height: 18%;
-    background: radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%);
-    transform: translate(-50%,-50%);
-    animation: cpz-shadow 3.2s ease-in-out infinite;
+    bottom: -12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; height: 12px;
+    background: radial-gradient(ellipse, rgba(0,0,0,.55) 0%, transparent 70%);
     border-radius: 50%;
+    animation: cpz-shadow-pulse 3s ease-in-out infinite;
   }
+
+  /* disco que gira — JS controla transform rotate() */
   .cpz-base {
     width: 100%; height: 100%;
     border-radius: 50%;
     position: relative;
-    animation: cpz-spin 8s linear infinite;
-    filter: drop-shadow(0 10px 24px rgba(0,0,0,.55));
+    will-change: transform;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,.5));
   }
-  /* corteza exterior */
+
+  /* capas de la pizza */
   .cpz-crust {
     position: absolute; inset: 0;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #d4834a, #a3541c 70%, #7c3a0e);
-    box-shadow: inset 0 -6px 14px rgba(0,0,0,.3), inset 0 4px 8px rgba(255,220,160,.2);
+    background: radial-gradient(circle at 38% 33%, #e09050, #a04820 65%, #7c3510);
   }
-  /* salsa */
   .cpz-sauce {
-    position: absolute; inset: 8%;
+    position: absolute; inset: 7%;
     border-radius: 50%;
-    background: radial-gradient(circle at 42% 36%, #d63a2e, #9e1a11 75%);
+    background: radial-gradient(circle at 40% 35%, #d63a2e, #9e1a11 80%);
   }
-  /* queso */
   .cpz-cheese {
-    position: absolute; inset: 12%;
+    position: absolute; inset: 11%;
     border-radius: 50%;
-    background: radial-gradient(circle at 38% 33%, #f7d96b, #e8b930 55%, #d4a020 80%);
+    background: radial-gradient(circle at 36% 30%, #fae06a, #e8b830 55%, #d09818 85%);
   }
-  /* toppings comunes */
+
+  /* toppings */
   .cpz-top {
     position: absolute;
     left: var(--px); top: var(--py);
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
   }
-  /* pepperoni */
   .cpz-pep {
-    width: 16%; aspect-ratio: 1;
+    width: 15%; aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 38% 32%, #e85040, #b01e16 65%, #7e1010);
-    border: 1.5px solid rgba(255,255,255,.18);
-    box-shadow: inset 0 2px 4px rgba(255,200,180,.25), 0 2px 5px rgba(0,0,0,.4);
+    background: radial-gradient(circle at 35% 30%, #f05040, #b01818 65%, #7a0e0e);
+    border: 1.5px solid rgba(255,255,255,.15);
+    box-shadow: 0 2px 5px rgba(0,0,0,.45);
   }
-  /* albahaca */
   .cpz-bas {
-    width: 12%; aspect-ratio: 1.6;
-    background: radial-gradient(circle at 40% 36%, #6abf44, #3a8a1a 70%);
-    border-radius: 40% 60% 60% 40% / 50%;
+    width: 11%; aspect-ratio: 1.5;
+    background: radial-gradient(circle at 38% 34%, #72cc48, #3a8a18 70%);
+    border-radius: 40% 60% 55% 45% / 50%;
     box-shadow: 0 1px 4px rgba(0,0,0,.3);
-    opacity: .9;
   }
-  /* burbujas queso */
   .cpz-bub {
-    width: 8%; aspect-ratio: 1;
+    width: 7%; aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #fff8d0, #f0c840 60%);
-    opacity: .75;
+    background: radial-gradient(circle at 32% 28%, #fffcd0, #f2c840 65%);
+    opacity: .8;
     box-shadow: 0 1px 3px rgba(0,0,0,.2);
   }
-  /* líneas de corte */
   .cpz-slice {
     position: absolute;
     top: 50%; left: 50%;
-    width: 100%; height: 1.5px;
-    background: rgba(160,80,10,.35);
+    width: 50%; height: 1.5px;
+    background: rgba(140,60,8,.4);
     transform-origin: left center;
     transform: translateY(-50%) rotate(var(--ang));
+  }
+  .cpz-slice-r {
+    position: absolute;
+    top: 50%; right: 50%;
+    width: 50%; height: 1.5px;
+    background: rgba(140,60,8,.4);
+    transform-origin: right center;
+    transform: translateY(-50%) rotate(calc(var(--ang) + 180deg));
   }
 
   /* cuando Three.js carga, esconde la pizza CSS */
   .hero-3d.ready .css-pizza { display: none; }
+
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
     *{animation:none !important;transition:none !important}
@@ -364,7 +394,7 @@
 <div class="hero wrap">
   <div class="hero-3d reveal" id="hero3d" style="--d:0s">
     <canvas id="pizzaCanvas"></canvas>
-    <div class="css-pizza fallback3d" aria-label="Pizza giratoria" role="img"><div class="cpz-shadow"></div><div class="cpz-base"><div class="cpz-crust"></div><div class="cpz-sauce"></div><div class="cpz-cheese"></div><div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div><div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div><div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div><div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div><div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div><div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div><div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div><div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div><div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div><div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div><div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div><div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div><div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div><div class="cpz-slice" style="--ang:0deg"></div><div class="cpz-slice" style="--ang:45deg"></div><div class="cpz-slice" style="--ang:90deg"></div><div class="cpz-slice" style="--ang:135deg"></div></div></div>
+    <div class="css-pizza fallback3d" aria-label="Pizza giratoria" role="img"><div class="cpz-wrap"><div class="cpz-shadow"></div><div class="cpz-base"><div class="cpz-crust"></div><div class="cpz-sauce"></div><div class="cpz-cheese"></div><div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div><div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div><div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div><div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div><div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div><div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div><div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div><div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div><div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div><div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div><div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div><div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div><div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div><div class="cpz-slice" style="--ang:0deg"></div><div class="cpz-slice" style="--ang:45deg"></div><div class="cpz-slice" style="--ang:90deg"></div><div class="cpz-slice" style="--ang:135deg"></div></div></div></div>
   </div>
   <p class="spin-hint">↺ Girá la pizza con el dedo</p>
   <p class="eyebrow reveal" style="--d:.05s">Pizzería artesanal</p>
@@ -635,37 +665,29 @@ if (fine && !reduceMotion){
 <script>
 (function(){
   const pizza = document.querySelector('.css-pizza');
+  const wrap  = pizza && pizza.querySelector('.cpz-wrap');
   const base  = pizza && pizza.querySelector('.cpz-base');
-  if (!pizza || !base) return;
+  if (!pizza || !base || !wrap) return;
 
-  // Estado de rotación
-  let angle   = 0;      // grados actuales
-  let vel     = 0;      // velocidad de inercia (deg/frame)
-  let autoVel = 0.45;   // velocidad auto-giro (deg/frame)
+  // Desactivar animación CSS de giro (la manejamos con JS)
+  base.style.animation = 'none';
+
+  let angle    = 0;     // grados acumulados
+  let vel      = 0;     // inercia (deg/frame)
+  const AUTO   = 0.5;   // auto-giro deg/frame
   let dragging = false;
   let lastX    = 0;
-  let rafId    = null;
 
-  // Pausar animación CSS y controlar con JS
-  base.style.animation = 'none';
-  pizza.style.animation = 'cpz-float 3.2s ease-in-out infinite';
-
-  function applyRotation(){
-    base.style.transform = `rotate(${angle}deg)`;
-  }
-
-  function loop(){
+  function tick(){
     if (!dragging){
-      vel  *= 0.94;             // fricción inercia
-      angle += vel + autoVel;   // auto-giro + inercia
+      vel   *= 0.93;
+      angle += vel + AUTO;
     }
-    applyRotation();
-    rafId = requestAnimationFrame(loop);
+    // rotate() plano — sin perspective ni rotateY para evitar vista de costado
+    base.style.transform = 'rotate(' + angle + 'deg)';
+    requestAnimationFrame(tick);
   }
-  loop();
-
-  // Cursor
-  pizza.style.cursor = 'grab';
+  tick();
 
   function getX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
 
@@ -677,9 +699,9 @@ if (fine && !reduceMotion){
   }
   function onMove(e){
     if (!dragging) return;
-    const x  = getX(e);
+    const x = getX(e);
     const dx = x - lastX;
-    vel   = dx * 0.9;       // fuerza de giro manual
+    vel    = dx * 1.1;
     angle += vel;
     lastX  = x;
   }
@@ -688,26 +710,21 @@ if (fine && !reduceMotion){
     pizza.style.cursor = 'grab';
   }
 
+  // Click simple = impulso
+  pizza.addEventListener('click', () => { if (Math.abs(vel) < 2) vel += 10; });
+
   pizza.addEventListener('mousedown',  onDown, { passive: false });
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup',   onUp);
-
   pizza.addEventListener('touchstart', onDown, { passive: false });
   pizza.addEventListener('touchmove',  onMove, { passive: true });
   pizza.addEventListener('touchend',   onUp);
 
-  // Click simple = impulso rápido
-  pizza.addEventListener('click', () => {
-    if (Math.abs(vel) < 1) vel += 8;
-  });
-
-  // Cuando Three.js carga, limpiar
+  // Apagar cuando Three.js carga
   const host = document.getElementById('hero3d');
   if (host){
     new MutationObserver(() => {
-      if (host.classList.contains('ready')){
-        cancelAnimationFrame(rafId);
-      }
+      if (host.classList.contains('ready')) base.style.animation = '';
     }).observe(host, { attributes: true, attributeFilter: ['class'] });
   }
 })();
