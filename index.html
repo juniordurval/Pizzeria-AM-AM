@@ -1,13 +1,8 @@
-¡Tenés toda la razón! Tener la pizza giratoria pegada al borde derecho (`right: -80px`) hace que se vea desordenado, puede cortar la imagen en pantallas pequeñas y no luce profesional.
+Entiendo perfectamente. Viendo la captura de pantalla, esa pizza flotante se descolocó y está tapando los botones y el texto, arruinando por completo la vista en móviles. A veces, "menos es más", y un diseño limpio y directo es mucho más profesional y funcional para tus clientes.
 
-El lugar más lógico, profesional y donde **funciona correctamente** es en el centro de la pantalla principal (la sección *Hero*), justo donde debería ir la pizza en 3D.
+He eliminado **todo el rastro de la pizza** (tanto la giratoria en 2D que estaba estorbando, como el script de la pizza en 3D y su espacio) para dejar el panorama completamente limpio, ordenado y sin obstáculos.
 
-He modificado el código para hacer dos cosas importantes:
-
-1. **Centrar la pizza giratoria (CSS)** dentro del contenedor principal (`.hero-3d`).
-2. **Corregir el error fatal** que detectamos antes (agregando `id="hero3d"`). Ahora, la pizza giratoria funcionará como un interactivo perfecto en el centro. Si la pizza en 3D (Three.js) logra cargar, ocultará suavemente a la pizza CSS; si no hay internet o falla, el usuario siempre verá tu pizza CSS giratoria centrada de forma profesional.
-
-Aquí tienes el **código completo y corregido** listo para copiar y pegar:
+Aquí tienes el código completo y optimizado. Solo copialo y reemplazalo:
 
 ```html
 <!DOCTYPE html>
@@ -18,7 +13,7 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
 <meta name="color-scheme" content="dark" />
 
 <title>Ñam Ñam Pizza · Menú y pedidos por WhatsApp</title>
-<meta name="description" content="Pizzas artesanales, Ñamburguer y lasaña en Ñam Ñam Pizza. Mirá el menú en 3D y hacé tu pedido por WhatsApp. Amor a primera rebanada." />
+<meta name="description" content="Pizzas artesanales, Ñamburguer y lasaña en Ñam Ñam Pizza. Hacé tu pedido por WhatsApp. Amor a primera rebanada." />
 <meta name="theme-color" content="#3a0808" />
 <meta property="og:type" content="restaurant" />
 <meta property="og:title" content="Ñam Ñam Pizza · Amor a primera rebanada" />
@@ -29,10 +24,6 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Dancing+Script:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-<script type="importmap">
-{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-</script>
 
 <style>
   :root{
@@ -89,44 +80,15 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
   .bar .wa-btn{padding:9px 15px;font-size:.86rem}
 
   /* ---------- hero ---------- */
-  .hero{position:relative;z-index:1;text-align:center;padding:clamp(20px,4vw,52px) 0 clamp(28px,6vw,56px)}
-
-  /* pizza 3D / Fallback CSS */
-  .hero-3d{
-    position:relative;
-    width:min(420px,80vw);
-    aspect-ratio:1/0.85;
-    margin:0 auto 4px;
-    flex-shrink:0;
-    display:block;
-    left:0; right:0;
-  }
-  .hero-3d::after{content:"";position:absolute;inset:6%;z-index:-1;border-radius:50%;
-    background:radial-gradient(closest-side,rgba(247,194,51,.22),rgba(226,35,26,.08) 60%,transparent 72%);filter:blur(14px)}
-  
-  #pizzaCanvas{
-    position:absolute;inset:0;
-    width:100% !important;height:100% !important;
-    opacity:0;transition:opacity .8s ease;
-    cursor:grab;touch-action:pan-y;display:block;
-    z-index: 10;
-  }
-  #pizzaCanvas:active{cursor:grabbing}
-  .hero-3d.ready #pizzaCanvas{opacity:1}
-  
-  /* Si el canvas 3D carga bien, escondemos el fallback de CSS */
-  .hero-3d.ready #wall-pizza { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
-
-  .spin-hint{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-dim);margin:0 0 14px;opacity:0;transition:opacity .6s}
-  .hero-3d.ready ~ .spin-hint{opacity:.8}
+  .hero{position:relative;z-index:1;text-align:center;padding:clamp(40px,6vw,72px) 0 clamp(28px,6vw,56px)}
 
   .eyebrow{font-family:var(--font-brand);font-weight:600;letter-spacing:.34em;text-transform:uppercase;font-size:.72rem;color:var(--gold);margin:0 0 6px}
   .wordmark{font-family:var(--font-brand);font-weight:800;font-size:clamp(2.7rem,11vw,5.2rem);line-height:.92;letter-spacing:-.01em;margin:0;color:var(--gold);text-shadow:0 3px 0 var(--red-2),0 10px 24px rgba(0,0,0,.45)}
   .wordmark span{color:var(--cream)}
   .word-pizza{font-family:var(--font-brand);font-weight:700;letter-spacing:.5em;font-size:clamp(.95rem,3.4vw,1.4rem);color:var(--cream);margin:8px 0 0;padding-left:.5em}
   .tagline{font-family:var(--font-script);font-weight:700;font-size:clamp(1.7rem,6vw,2.7rem);color:var(--gold-2);margin:10px 0 0;transform:rotate(-2deg)}
-  .lead{max-width:46ch;margin:18px auto 0;color:var(--cream-dim);font-size:1.02rem}
-  .hero-cta{margin-top:26px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .lead{max-width:46ch;margin:24px auto 0;color:var(--cream-dim);font-size:1.02rem}
+  .hero-cta{margin-top:32px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
   .ghost{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-brand);font-weight:700;color:var(--gold);background:transparent;border:1.5px solid var(--line);padding:11px 18px;border-radius:999px;transition:.2s}
   .ghost:hover{border-color:var(--gold);background:rgba(247,194,51,.08)}
   .pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
@@ -202,7 +164,7 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
   .float-wa.show{transform:translateY(0);opacity:1}
   .float-wa:hover{background:#2ee06f}
   .float-wa .ic{width:30px;height:30px}
-  .float-wa::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--wa);animation:ping 2.4s ease-out infinite}
+  .float-wa::after{content:"absolute";inset:0;border-radius:50%;border:2px solid var(--wa);animation:ping 2.4s ease-out infinite}
   @keyframes ping{0%{transform:scale(1);opacity:.6}70%{transform:scale(1.7);opacity:0}100%{opacity:0}}
 
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
@@ -220,130 +182,11 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
     .coin{width:74px;height:74px}
     .coin .amt{font-size:1.3rem}
     .ingredients{min-height:0}
-    .hero-3d{width:min(320px,84vw)}
     .pills{gap:7px}
     .pill{font-size:.77rem;padding:6px 11px}
   }
   @media (max-width:400px){
-    .hero-3d{width:88vw}
     .wordmark{font-size:clamp(2.2rem,14vw,3rem)}
-  }
-
-  /* ---------- CSS Pizza giratoria (CENTRADA) ---------- */
-  @keyframes cpz-float {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
-  }
-  @keyframes cpz-shadow-pulse {
-    0%,100% { opacity:.45; transform: translateX(-50%) scaleX(1); }
-    50%      { opacity:.2;  transform: translateX(-50%) scaleX(.8); }
-  }
-
-  /* ---- Pizza centrada en el Hero ---- */
-  #wall-pizza {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: clamp(220px, 70%, 320px);
-    aspect-ratio: 1;
-    z-index: 5; /* Por encima del fondo, por debajo del canvas si carga */
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-    -webkit-tap-highlight-color: transparent;
-    opacity: 0;
-    animation: wpz-fadein .8s .4s ease forwards;
-  }
-  #wall-pizza:active { cursor: grabbing; }
-  @keyframes wpz-fadein { to { opacity: 1; } }
-
-  .cpz-hint {
-    position: absolute;
-    bottom: -22px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: .65rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: rgba(255,243,226,.5);
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .cpz-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    animation: cpz-float 3s ease-in-out infinite;
-  }
-  .cpz-shadow {
-    position: absolute;
-    bottom: -10%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%; height: 10px;
-    background: radial-gradient(ellipse, rgba(0,0,0,.55) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: cpz-shadow-pulse 3s ease-in-out infinite;
-  }
-  .cpz-base {
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    position: relative;
-    will-change: transform;
-    filter: drop-shadow(0 6px 18px rgba(0,0,0,.55));
-  }
-
-  /* capas */
-  .cpz-crust {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 38% 33%, #e09050, #a04820 65%, #7c3510);
-  }
-  .cpz-sauce {
-    position: absolute; inset: 7%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #d63a2e, #9e1a11 80%);
-  }
-  .cpz-cheese {
-    position: absolute; inset: 11%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 36% 30%, #fae06a, #e8b830 55%, #d09818 85%);
-  }
-
-  /* toppings */
-  .cpz-top {
-    position: absolute;
-    left: var(--px); top: var(--py);
-    transform: translate(-50%, -50%);
-  }
-  .cpz-pep {
-    width: 15%; aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #f05040, #b01818 65%, #7a0e0e);
-    border: 1.5px solid rgba(255,255,255,.15);
-    box-shadow: 0 2px 5px rgba(0,0,0,.45);
-  }
-  .cpz-bas {
-    width: 11%; aspect-ratio: 1.5;
-    background: radial-gradient(circle at 38% 34%, #72cc48, #3a8a18 70%);
-    border-radius: 40% 60% 55% 45% / 50%;
-    box-shadow: 0 1px 4px rgba(0,0,0,.3);
-  }
-  .cpz-bub {
-    width: 7%; aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 32% 28%, #fffcd0, #f2c840 65%);
-    opacity: .8;
-  }
-  .cpz-slice {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 50%; height: 1.5px;
-    background: rgba(140,60,8,.4);
-    transform-origin: left center;
-    transform: translateY(-50%) rotate(var(--ang));
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -400,46 +243,10 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
 
 <main id="top">
 <div class="hero wrap">
-
   <p class="eyebrow reveal" style="--d:.05s">Pizzería artesanal</p>
   <h1 class="wordmark reveal" style="--d:.1s">Ñam <span>Ñam</span></h1>
   <p class="word-pizza reveal" style="--d:.15s">PIZZA</p>
   <p class="tagline reveal" style="--d:.2s">Amor a primera rebanada</p>
-  
-  <div class="hero-3d" id="hero3d">
-    <canvas id="pizzaCanvas"></canvas>
-    
-    <div id="wall-pizza" aria-label="Pizza decorativa giratoria" role="img">
-      <div class="cpz-wrap">
-        <div class="cpz-shadow"></div>
-        <div class="cpz-base">
-          <div class="cpz-crust"></div>
-          <div class="cpz-sauce"></div>
-          <div class="cpz-cheese"></div>
-          <div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div>
-          <div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div>
-          <div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div>
-          <div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div>
-          <div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div>
-          <div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div>
-          <div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div>
-          <div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div>
-          <div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div>
-          <div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div>
-          <div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div>
-          <div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div>
-          <div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div>
-          <div class="cpz-slice" style="--ang:0deg"></div>
-          <div class="cpz-slice" style="--ang:45deg"></div>
-          <div class="cpz-slice" style="--ang:90deg"></div>
-          <div class="cpz-slice" style="--ang:135deg"></div>
-        </div>
-        <div class="cpz-hint">↺ girá</div>
-      </div>
-    </div>
-  </div>
-  
-  <p class="spin-hint reveal">Deslizá para girar</p>
   
   <p class="lead reveal" style="--d:.28s">Pizzas recién horneadas, Ñamburguer y lasaña, hechas con harto amor. Elegí tu favorita y hacé tu pedido por WhatsApp.</p>
   <div class="hero-cta reveal" style="--d:.36s">
@@ -506,94 +313,6 @@ Aquí tienes el **código completo y corregido** listo para copiar y pegar:
   <p style="text-align:center;padding:20px;color:#fff3e2">Activá JavaScript para ver el menú completo. O escribinos directo por
   <a href="https://wa.me/59169362762" style="color:#f7c233">WhatsApp</a>.</p>
 </noscript>
-
-<script type="module">
-(async () => {
-  const host = document.getElementById('hero3d');
-  const canvas = document.getElementById('pizzaCanvas');
-  if (!host || !canvas) return;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  let THREE;
-  try { THREE = await import('three'); }
-  catch (e) { return; } 
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  camera.position.set(0, 3.4, 6.2);
-  camera.lookAt(0, 0.15, 0);
-
-  scene.add(new THREE.AmbientLight(0xfff3e0, 0.7));
-  const key = new THREE.DirectionalLight(0xfff0d2, 1.5); key.position.set(5, 9, 6); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xff8a4c, 0.5); rim.position.set(-6, 4, -4); scene.add(rim);
-
-  const pizza = new THREE.Group();
-  const M = (c, o = {}) => new THREE.MeshStandardMaterial({ color:c, roughness:0.8, ...o });
-
-  pizza.add(new THREE.Mesh(new THREE.CylinderGeometry(2.55, 2.5, 0.34, 64), M(0xe0a456,{roughness:0.95})));
-  const crust = new THREE.Mesh(new THREE.TorusGeometry(2.5, 0.3, 18, 80), M(0xc67a32,{roughness:0.9}));
-  crust.rotation.x = Math.PI/2; crust.position.y = 0.05; pizza.add(crust);
-  const sauce = new THREE.Mesh(new THREE.CylinderGeometry(2.3, 2.3, 0.05, 64), M(0xb02318,{roughness:0.7}));
-  sauce.position.y = 0.19; pizza.add(sauce);
-  const cheese = new THREE.Mesh(new THREE.CylinderGeometry(2.22, 2.24, 0.09, 64), M(0xf0bf4d,{roughness:0.5,metalness:0.04}));
-  cheese.position.y = 0.23; pizza.add(cheese);
-
-  const rnd = (r) => { const a = Math.random()*Math.PI*2, rr = Math.sqrt(Math.random())*r; return [Math.cos(a)*rr, Math.sin(a)*rr]; };
-
-  const pepGeo = new THREE.CylinderGeometry(0.23, 0.23, 0.06, 22), pepMat = M(0xbe2f24,{roughness:0.55});
-  for (let i=0;i<13;i++){ const m=new THREE.Mesh(pepGeo,pepMat); const [x,z]=rnd(1.95); m.position.set(x,0.3,z); pizza.add(m); }
-
-  const basMat = M(0x3f8f2e,{roughness:0.7}), basGeo = new THREE.SphereGeometry(0.13,14,10);
-  for (let i=0;i<11;i++){ const m=new THREE.Mesh(basGeo,basMat); m.scale.set(1.7,0.32,1.1); const [x,z]=rnd(1.95); m.position.set(x,0.31,z); m.rotation.y=Math.random()*Math.PI; pizza.add(m); }
-
-  const bubMat = M(0xf6cf6a,{roughness:0.45});
-  for (let i=0;i<16;i++){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.09,10,8),bubMat); const [x,z]=rnd(2.05); m.position.set(x,0.27,z); m.scale.y=0.6; pizza.add(m); }
-
-  pizza.rotation.x = -0.45; pizza.rotation.y = -0.4;
-  scene.add(pizza);
-
-  function resize(){
-    const rect = host.getBoundingClientRect();
-    const w = rect.width || host.clientWidth;
-    const h = rect.height || host.clientHeight;
-    renderer.setSize(w, h, false);
-    camera.aspect = w/h; camera.updateProjectionMatrix();
-  }
-  resize();
-  new ResizeObserver(resize).observe(host);
-  window.addEventListener('resize', resize);
-
-  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
-  let dragging=false, lastX=0, lastY=0, vel=0;
-  const down = (e)=>{ dragging=true; const t=e.touches&&e.touches[0]; lastX=t?t.clientX:e.clientX; lastY=t?t.clientY:e.clientY; };
-  const move = (e)=>{ if(!dragging) return; const isT=!!e.touches; const t=isT?e.touches[0]:e;
-    const dx=t.clientX-lastX, dy=t.clientY-lastY; pizza.rotation.y += dx*0.01;
-    if(!isT) pizza.rotation.x = clamp(pizza.rotation.x + dy*0.005, -1.1, -0.05);
-    vel = dx*0.01; lastX=t.clientX; lastY=t.clientY; };
-  const up = ()=>{ dragging=false; };
-  canvas.addEventListener('mousedown', down); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
-  canvas.addEventListener('touchstart', down, {passive:true}); canvas.addEventListener('touchmove', move, {passive:true}); canvas.addEventListener('touchend', up);
-
-  let visible=true;
-  new IntersectionObserver(([en])=>{ visible = en.isIntersecting; }, {threshold:0.01}).observe(host);
-
-  host.classList.add('ready');
-  const clock = new THREE.Clock();
-  (function loop(){
-    requestAnimationFrame(loop);
-    if (document.hidden || !visible) return;
-    const t = clock.getElapsedTime();
-    if (!reduce){
-      if (!dragging){ pizza.rotation.y += 0.0045 + vel; vel *= 0.92; }
-      pizza.position.y = Math.sin(t*1.4)*0.07;
-    }
-    renderer.render(scene, camera);
-  })();
-})();
-</script>
 
 <script>
 const WHATSAPP_NUMERO = "59169362762";
@@ -691,62 +410,6 @@ if (fine && !reduceMotion){
     card.addEventListener('pointerleave', () => { card.classList.remove('tilting'); card.style.transform = ''; });
   });
 }
-</script>
-
-<script>
-(function(){
-  const pizza = document.getElementById('wall-pizza');
-  const base  = pizza && pizza.querySelector('.cpz-base');
-  if (!pizza || !base) return;
-
-  base.style.animation = 'none';
-
-  let angle = 0;
-  let vel   = 0;
-  const AUTO = 0.5;
-  let dragging = false;
-  let lastX = 0;
-
-  function tick(){
-    if (!dragging){
-      vel   *= 0.93;
-      angle += vel + AUTO;
-    }
-    base.style.transform = 'rotate(' + angle + 'deg)';
-    requestAnimationFrame(tick);
-  }
-  tick();
-
-  function getX(e){ return (e.touches ? e.touches[0] : e).clientX; }
-
-  function onDown(e){
-    dragging = true;
-    lastX = getX(e);
-    pizza.style.cursor = 'grabbing';
-    e.stopPropagation();   
-    e.preventDefault();    
-  }
-  function onMove(e){
-    if (!dragging) return;
-    e.stopPropagation();
-    if (e.cancelable) e.preventDefault();
-    const x = getX(e);
-    vel   = (x - lastX) * 1.3;
-    angle += vel;
-    lastX  = x;
-  }
-  function onUp(){ dragging = false; pizza.style.cursor = 'grab'; }
-
-  pizza.addEventListener('click', () => { if (Math.abs(vel) < 2) vel += 14; });
-  pizza.addEventListener('mousedown', onDown, { passive: false });
-  pizza.addEventListener('mousemove', onMove, { passive: false });
-  pizza.addEventListener('mouseup',   onUp);
-  pizza.addEventListener('mouseleave', onUp);
-  pizza.addEventListener('touchstart', onDown,  { passive: false });
-  pizza.addEventListener('touchmove',  onMove,  { passive: false });
-  pizza.addEventListener('touchend',   onUp,    { passive: true });
-  pizza.addEventListener('touchcancel',onUp,    { passive: true });
-})();
 </script>
 </body>
 </html>
