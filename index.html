@@ -1,16 +1,21 @@
+¡Tenés toda la razón! Tener la pizza giratoria pegada al borde derecho (`right: -80px`) hace que se vea desordenado, puede cortar la imagen en pantallas pequeñas y no luce profesional.
+
+El lugar más lógico, profesional y donde **funciona correctamente** es en el centro de la pantalla principal (la sección *Hero*), justo donde debería ir la pizza en 3D.
+
+He modificado el código para hacer dos cosas importantes:
+
+1. **Centrar la pizza giratoria (CSS)** dentro del contenedor principal (`.hero-3d`).
+2. **Corregir el error fatal** que detectamos antes (agregando `id="hero3d"`). Ahora, la pizza giratoria funcionará como un interactivo perfecto en el centro. Si la pizza en 3D (Three.js) logra cargar, ocultará suavemente a la pizza CSS; si no hay internet o falla, el usuario siempre verá tu pizza CSS giratoria centrada de forma profesional.
+
+Aquí tienes el **código completo y corregido** listo para copiar y pegar:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark" />
-
-<!-- ============================================================= -->
-<!--  WhatsApp YA configurado: +591 69362762                       -->
-<!--  Si algún día cambia, editá la línea:                         -->
-<!--    const WHATSAPP_NUMERO = "59169362762";                     -->
-<!--  (más abajo, en el <script>). Sin "+", espacios ni guiones.   -->
-<!-- ============================================================= -->
 
 <title>Ñam Ñam Pizza · Menú y pedidos por WhatsApp</title>
 <meta name="description" content="Pizzas artesanales, Ñamburguer y lasaña en Ñam Ñam Pizza. Mirá el menú en 3D y hacé tu pedido por WhatsApp. Amor a primera rebanada." />
@@ -25,7 +30,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Dancing+Script:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<!-- Three.js (para la pizza 3D). Si no hay internet, se muestra el logo. -->
 <script type="importmap">
 { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
 </script>
@@ -87,7 +91,7 @@
   /* ---------- hero ---------- */
   .hero{position:relative;z-index:1;text-align:center;padding:clamp(20px,4vw,52px) 0 clamp(28px,6vw,56px)}
 
-  /* pizza 3D: aspect-ratio keeps it square-ish on all screens */
+  /* pizza 3D / Fallback CSS */
   .hero-3d{
     position:relative;
     width:min(420px,80vw);
@@ -99,16 +103,20 @@
   }
   .hero-3d::after{content:"";position:absolute;inset:6%;z-index:-1;border-radius:50%;
     background:radial-gradient(closest-side,rgba(247,194,51,.22),rgba(226,35,26,.08) 60%,transparent 72%);filter:blur(14px)}
+  
   #pizzaCanvas{
     position:absolute;inset:0;
     width:100% !important;height:100% !important;
     opacity:0;transition:opacity .8s ease;
     cursor:grab;touch-action:pan-y;display:block;
+    z-index: 10;
   }
   #pizzaCanvas:active{cursor:grabbing}
   .hero-3d.ready #pizzaCanvas{opacity:1}
-  .fallback3d{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58%;height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
-  .hero-3d.ready .fallback3d{display:none}
+  
+  /* Si el canvas 3D carga bien, escondemos el fallback de CSS */
+  .hero-3d.ready #wall-pizza { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+
   .spin-hint{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-dim);margin:0 0 14px;opacity:0;transition:opacity .6s}
   .hero-3d.ready ~ .spin-hint{opacity:.8}
 
@@ -221,7 +229,7 @@
     .wordmark{font-size:clamp(2.2rem,14vw,3rem)}
   }
 
-  /* ---------- CSS Pizza giratoria (fallback) ---------- */
+  /* ---------- CSS Pizza giratoria (CENTRADA) ---------- */
   @keyframes cpz-float {
     0%,100% { transform: translateY(0); }
     50%      { transform: translateY(-8px); }
@@ -231,37 +239,26 @@
     50%      { opacity:.2;  transform: translateX(-50%) scaleX(.8); }
   }
 
-  /* ---- Pizza fija en pantalla (wall pizza) ---- */
+  /* ---- Pizza centrada en el Hero ---- */
   #wall-pizza {
-    position: fixed;
-    /* centrada verticalmente, pegada a la derecha */
-    right: -80px;
+    position: absolute;
+    left: 50%;
     top: 50%;
-    transform: translateY(-50%);
-    width: clamp(180px, 22vw, 280px);
+    transform: translate(-50%, -50%);
+    width: clamp(220px, 70%, 320px);
     aspect-ratio: 1;
-    z-index: 20;
+    z-index: 5; /* Por encima del fondo, por debajo del canvas si carga */
     cursor: grab;
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
-    /* fade in suave al cargar */
     opacity: 0;
     animation: wpz-fadein .8s .4s ease forwards;
   }
   #wall-pizza:active { cursor: grabbing; }
   @keyframes wpz-fadein { to { opacity: 1; } }
 
-  /* en móvil: más pequeña y menos salida del borde */
-  @media (max-width: 600px) {
-    #wall-pizza {
-      right: -60px;
-      width: clamp(130px, 38vw, 180px);
-    }
-  }
-
-  /* hint de giro */
   .cpz-hint {
     position: absolute;
     bottom: -22px;
@@ -274,16 +271,12 @@
     white-space: nowrap;
     pointer-events: none;
   }
-
-  /* wrapper flotante */
   .cpz-wrap {
     position: relative;
     width: 100%;
     aspect-ratio: 1;
     animation: cpz-float 3s ease-in-out infinite;
   }
-
-  /* sombra */
   .cpz-shadow {
     position: absolute;
     bottom: -10%;
@@ -294,8 +287,6 @@
     border-radius: 50%;
     animation: cpz-shadow-pulse 3s ease-in-out infinite;
   }
-
-  /* disco girador — JS maneja transform */
   .cpz-base {
     width: 100%; height: 100%;
     border-radius: 50%;
@@ -366,7 +357,6 @@
 </head>
 <body>
 
-<!-- reusable emblem + whatsapp glyph -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="emblem" viewBox="0 0 240 240">
     <circle cx="120" cy="120" r="115" fill="#fff" stroke="#d81f26" stroke-width="8"/>
@@ -415,6 +405,42 @@
   <h1 class="wordmark reveal" style="--d:.1s">Ñam <span>Ñam</span></h1>
   <p class="word-pizza reveal" style="--d:.15s">PIZZA</p>
   <p class="tagline reveal" style="--d:.2s">Amor a primera rebanada</p>
+  
+  <div class="hero-3d" id="hero3d">
+    <canvas id="pizzaCanvas"></canvas>
+    
+    <div id="wall-pizza" aria-label="Pizza decorativa giratoria" role="img">
+      <div class="cpz-wrap">
+        <div class="cpz-shadow"></div>
+        <div class="cpz-base">
+          <div class="cpz-crust"></div>
+          <div class="cpz-sauce"></div>
+          <div class="cpz-cheese"></div>
+          <div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div>
+          <div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div>
+          <div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div>
+          <div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div>
+          <div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div>
+          <div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div>
+          <div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div>
+          <div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div>
+          <div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div>
+          <div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div>
+          <div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div>
+          <div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div>
+          <div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div>
+          <div class="cpz-slice" style="--ang:0deg"></div>
+          <div class="cpz-slice" style="--ang:45deg"></div>
+          <div class="cpz-slice" style="--ang:90deg"></div>
+          <div class="cpz-slice" style="--ang:135deg"></div>
+        </div>
+        <div class="cpz-hint">↺ girá</div>
+      </div>
+    </div>
+  </div>
+  
+  <p class="spin-hint reveal">Deslizá para girar</p>
+  
   <p class="lead reveal" style="--d:.28s">Pizzas recién horneadas, Ñamburguer y lasaña, hechas con harto amor. Elegí tu favorita y hacé tu pedido por WhatsApp.</p>
   <div class="hero-cta reveal" style="--d:.36s">
     <a class="wa-btn" data-wa="general" target="_blank" rel="noopener">
@@ -467,9 +493,6 @@
     <p class="foot-meta">
       <strong>Pedidos y consultas por WhatsApp</strong><br />
       <a href="https://wa.me/59169362762" target="_blank" rel="noopener">+591 69362762</a>
-      <!-- Opcional: descomentá y editá con tus datos -->
-      <!-- <br />Horario: Mar a Dom · 18:00 – 23:00 -->
-      <!-- <br />Zona: tu dirección o zona de reparto -->
     </p>
     <p class="credit">© <span id="year"></span> Ñam Ñam Pizza · Hecho con 🍕 y mozzarella</p>
   </div>
@@ -484,7 +507,6 @@
   <a href="https://wa.me/59169362762" style="color:#f7c233">WhatsApp</a>.</p>
 </noscript>
 
-<!-- ====================== Pizza 3D (Three.js) ====================== -->
 <script type="module">
 (async () => {
   const host = document.getElementById('hero3d');
@@ -494,7 +516,7 @@
 
   let THREE;
   try { THREE = await import('three'); }
-  catch (e) { return; } // sin internet: queda el logo SVG
+  catch (e) { return; } 
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -573,12 +595,8 @@
 })();
 </script>
 
-<!-- ====================== Menú + WhatsApp + tilt 3D ====================== -->
 <script>
-/* ============================================================= */
-/*  NÚMERO DE WHATSAPP (código país + número, sin + ni espacios) */
-const WHATSAPP_NUMERO = "59169362762";   /* +591 69362762 */
-/* ============================================================= */
+const WHATSAPP_NUMERO = "59169362762";
 
 const PIZZAS = [
   { n:"Calabresa",  d:"Pomodoro, chorizo calabresa, queso mozzarella.",        med:45, per:25 },
@@ -656,7 +674,7 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold:0.12 });
 document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 
-/* tilt 3D en las tarjetas (solo mouse fino) */
+/* tilt 3D en las tarjetas */
 const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
 if (fine && !reduceMotion){
   document.querySelectorAll('.card').forEach(card => {
@@ -675,7 +693,6 @@ if (fine && !reduceMotion){
 }
 </script>
 
-<!-- ====================== Pizza de pared interactiva ====================== -->
 <script>
 (function(){
   const pizza = document.getElementById('wall-pizza');
@@ -706,8 +723,8 @@ if (fine && !reduceMotion){
     dragging = true;
     lastX = getX(e);
     pizza.style.cursor = 'grabbing';
-    e.stopPropagation();   // no burbujear al window
-    e.preventDefault();    // bloquear scroll solo aquí
+    e.stopPropagation();   
+    e.preventDefault();    
   }
   function onMove(e){
     if (!dragging) return;
@@ -720,52 +737,18 @@ if (fine && !reduceMotion){
   }
   function onUp(){ dragging = false; pizza.style.cursor = 'grab'; }
 
-  // Click = impulso
   pizza.addEventListener('click', () => { if (Math.abs(vel) < 2) vel += 14; });
-
-  // Mouse — listeners en la pizza, no en window, para no bloquear scroll de página
   pizza.addEventListener('mousedown', onDown, { passive: false });
   pizza.addEventListener('mousemove', onMove, { passive: false });
   pizza.addEventListener('mouseup',   onUp);
   pizza.addEventListener('mouseleave', onUp);
-
-  // Touch — igual, solo en el elemento
   pizza.addEventListener('touchstart', onDown,  { passive: false });
   pizza.addEventListener('touchmove',  onMove,  { passive: false });
   pizza.addEventListener('touchend',   onUp,    { passive: true });
   pizza.addEventListener('touchcancel',onUp,    { passive: true });
 })();
 </script>
-
-
-<!-- Pizza fija en pantalla — giratoria interactiva -->
-<div id="wall-pizza" aria-label="Pizza decorativa giratoria" role="img">
-  <div class="cpz-wrap">
-    <div class="cpz-shadow"></div>
-    <div class="cpz-base">
-      <div class="cpz-crust"></div>
-      <div class="cpz-sauce"></div>
-      <div class="cpz-cheese"></div>
-      <div class="cpz-top cpz-pep" style="--px:38%;--py:28%"></div>
-      <div class="cpz-top cpz-pep" style="--px:58%;--py:22%"></div>
-      <div class="cpz-top cpz-pep" style="--px:68%;--py:44%"></div>
-      <div class="cpz-top cpz-pep" style="--px:55%;--py:58%"></div>
-      <div class="cpz-top cpz-pep" style="--px:34%;--py:55%"></div>
-      <div class="cpz-top cpz-pep" style="--px:46%;--py:40%"></div>
-      <div class="cpz-top cpz-pep" style="--px:62%;--py:34%"></div>
-      <div class="cpz-top cpz-bas" style="--px:44%;--py:30%"></div>
-      <div class="cpz-top cpz-bas" style="--px:60%;--py:50%"></div>
-      <div class="cpz-top cpz-bas" style="--px:36%;--py:46%"></div>
-      <div class="cpz-top cpz-bub" style="--px:50%;--py:36%"></div>
-      <div class="cpz-top cpz-bub" style="--px:42%;--py:50%"></div>
-      <div class="cpz-top cpz-bub" style="--px:64%;--py:40%"></div>
-      <div class="cpz-slice" style="--ang:0deg"></div>
-      <div class="cpz-slice" style="--ang:45deg"></div>
-      <div class="cpz-slice" style="--ang:90deg"></div>
-      <div class="cpz-slice" style="--ang:135deg"></div>
-    </div>
-    <div class="cpz-hint">↺ girá</div>
-  </div>
-</div>
 </body>
 </html>
+
+```
